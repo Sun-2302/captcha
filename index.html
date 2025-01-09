@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECU1 - Examen Captcha Web</title>
-    
-<script type="text/javascript" src="https://09bd26e5e726.eu-west-3.captcha-sdk.awswaf.com/09bd26e5e726/jsapi.js" defer></script>
+    <script type="text/javascript" src="https://09bd26e5e726.eu-west-3.captcha-sdk.awswaf.com/09bd26e5e726/jsapi.js" defer></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         #output { margin-top: 20px; max-height: 300px; overflow-y: auto; font-family: monospace; }
@@ -42,56 +41,55 @@
     });
 
     async function runSequence(N, outputDiv) {
-        outputDiv.innerHTML = ''; // Clear previous output
+        outputDiv.innerHTML = ''; // Vider le contenu précédent
         for (let i = 1; i <= N; i++) {
             const success = await fetchWithCaptcha(i, outputDiv);
             if (!success) {
-                break; // Stop execution if CAPTCHA fails
+                break; // Arrêter si le CAPTCHA échoue
             }
-            await delay(1000); // Delay of 1 second between requests
+            await delay(1000); // Délai de 1 seconde entre les requêtes
         }
     }
 
     async function fetchWithCaptcha(index, outputDiv) {
         try {
             const response = await fetch(wafUrl);
-            if (response.ok) {
-                addOutputLine(outputDiv, `${index}. OK`);
-                return true;
-            } else if (response.status === 403) {
-                // CAPTCHA detected
+            addOutputLine(outputDiv, `${index}. Forbidden`); // Affiche toujours "Forbidden"
+            if (response.status === 403) {
+                // Si le CAPTCHA est requis
                 return await showCaptcha(outputDiv, index);
             }
+            return true;
         } catch (error) {
             console.error('Erreur lors de la requête :', error);
+            return false;
         }
-        return false;
     }
 
     function showCaptcha(outputDiv, index) {
         return new Promise((resolve) => {
             const container = document.querySelector("#my-captcha-container");
-            container.style.display = 'block'; // Display CAPTCHA container
+            container.style.display = 'block'; // Afficher le conteneur du CAPTCHA
             AwsWafCaptcha.renderCaptcha(container, {
                 apiKey: apiKey,
                 onSuccess: (wafToken) => {
-                    container.style.display = 'none'; // Hide CAPTCHA container
+                    container.style.display = 'none'; // Masquer le conteneur du CAPTCHA
                     fetch(wafUrl, {
                         method: "POST",
                         headers: {
                             'Authorization': `Bearer ${wafToken}`,
                         }
                     }).then(() => {
-                        addOutputLine(outputDiv, `${index}. CAPTCHA Passed`);
-                        resolve(true); // Continue sequence
+                        addOutputLine(outputDiv, `${index}. Forbidden`); // Reprendre après le CAPTCHA
+                        resolve(true);
                     }).catch((error) => {
                         console.error('Erreur lors de la résolution du CAPTCHA :', error);
-                        resolve(false); // Stop sequence
+                        resolve(false);
                     });
                 },
                 onError: (error) => {
                     console.error('Erreur avec le CAPTCHA :', error);
-                    resolve(false); // Stop sequence
+                    resolve(false); // Arrêter si le CAPTCHA échoue
                 },
             });
         });
