@@ -26,6 +26,7 @@
 </div>
 
 <script>
+    const apiKey = `<%= process.env.API_KEY%>`
     const wafUrl = "https://api.prod.jcloudify.com/whoami";
 
     document.getElementById('numberForm').addEventListener('submit', function (event) {
@@ -71,7 +72,7 @@
             const container = document.querySelector("#my-captcha-container");
             container.style.display = 'block'; // Afficher le conteneur du CAPTCHA
             AwsWafCaptcha.renderCaptcha(container, {
-                apiKey: window.apiKey,
+                apiKey: apiKey,
                 onSuccess: (wafToken) => {
                     container.style.display = 'none'; // Masquer le conteneur du CAPTCHA
                     fetch(wafUrl, {
