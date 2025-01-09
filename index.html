@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECU1 - Examen Captcha Web</title>
     <script type="text/javascript" src="https://09bd26e5e726.eu-west-3.captcha-sdk.awswaf.com/09bd26e5e726/jsapi.js" defer></script>
+    <script src="/script.js" defer></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         #output { margin-top: 20px; max-height: 300px; overflow-y: auto; font-family: monospace; }
@@ -25,7 +26,6 @@
 </div>
 
 <script>
-    const apiKey = "...API key goes here..."; // Remplacez par l'API Key fournie
     const wafUrl = "https://api.prod.jcloudify.com/whoami";
 
     document.getElementById('numberForm').addEventListener('submit', function (event) {
@@ -71,7 +71,7 @@
             const container = document.querySelector("#my-captcha-container");
             container.style.display = 'block'; // Afficher le conteneur du CAPTCHA
             AwsWafCaptcha.renderCaptcha(container, {
-                apiKey: apiKey,
+                apiKey: window.apiKey,
                 onSuccess: (wafToken) => {
                     container.style.display = 'none'; // Masquer le conteneur du CAPTCHA
                     fetch(wafUrl, {
